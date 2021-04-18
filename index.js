@@ -67,15 +67,21 @@ const unifiedServer = (req, res) => {
       payload: helpers.parseJSONToObject(buffer),
     };
 
-    chosenHandler(data, (statusCode, payload) => {
-      statusCode = typeof statusCode === "number" ? statusCode : 200;
-      payload = typeof payload === "object" ? payload : {};
+    if (trimmedPath === "") {
+      res.writeHead(200, { "Content-Type": "text/html" });
+      const html = fs.readFileSync("./build/index.html");
+      res.end(html);
+    } else {
+      chosenHandler(data, (statusCode, payload) => {
+        statusCode = typeof statusCode === "number" ? statusCode : 200;
+        payload = typeof payload === "object" ? payload : {};
 
-      const payloadString = JSON.stringify(payload);
-      res.setHeader("Content-Type", "application/json");
-      res.writeHead(statusCode);
-      res.end(payloadString);
-    });
+        const payloadString = JSON.stringify(payload);
+        res.setHeader("Content-Type", "application/json");
+        res.writeHead(statusCode);
+        res.end(payloadString);
+      });
+    }
   });
 };
 
